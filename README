@@ -1,0 +1,19 @@
+Overview:
+
+In this code users will be able to call the program called scopy which the purpose of this program to let users to copy 
+another user’s files according to some access configuration other than UNIX file permissions. The users names will be 
+mantioned in the access control file like "file.txt.acl" the program will check for the user name and base on the .acl users names 
+it will let them to copy the file or not. The program will set its SetUID bit so that scopy will
+run as them. Other users may then run that instance of scopy, specifying a file they would like to retrieve.
+
+As it mantioned in the assignment this how the other users then the main user will do to copy ther file to them 
+"For example, assume Alice wants to make her schedule available to Bob. She places a copy of scopy
+in her public directory at /home/alice/public/scopy, verifies that Bob will be able to access it, and sets
+its SetUID bit with chmod u+s scopy. She also creates appropriate permission data so Bob can access her
+daily schedule.txt. When Bob wants to make a copy, he runs a command like the following:
+bob@wopr $ /home/alice/public/scopy /home/alice/daily_schedule.txt alices_schedule.txt"
+
+This program has a Makefile if you need to run it you just call ***"make"**** to compile the scopy
+and ******"make clean"****** if you need to move the object files.
+
+This progam it include a file.txt.acl , file.txt , Makefile, and the main cod3e in scopy.c //////
