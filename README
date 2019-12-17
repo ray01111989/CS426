@@ -6,7 +6,7 @@ mantioned in the access control file like "file.txt.acl" the program will check 
 it will let them to copy the file or not. The program will set its SetUID bit so that scopy will
 run as them. Other users may then run that instance of scopy, specifying a file they would like to retrieve.
 
-As it mantioned in the assignment this how the other users then the main user will do to copy ther file to them 
+How the other users then the main user will do to copy ther file to them 
 "For example, assume Alice wants to make her schedule available to Bob. She places a copy of scopy
 in her public directory at /home/alice/public/scopy, verifies that Bob will be able to access it, and sets
 its SetUID bit with chmod u+s scopy. She also creates appropriate permission data so Bob can access her
