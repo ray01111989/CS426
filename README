@@ -1,19 +1,43 @@
-Overview:
+scopy: copy a file for another user, controlled by an access list
 
-In this code users will be able to call the program called scopy which the purpose of this program to let users to copy 
-another user’s files according to some access configuration other than UNIX file permissions. The users names will be 
-mantioned in the access control file like "file.txt.acl" the program will check for the user name and base on the .acl users names 
-it will let them to copy the file or not. The program will set its SetUID bit so that scopy will
-run as them. Other users may then run that instance of scopy, specifying a file they would like to retrieve.
+WHAT IT DOES
+scopy lets the owner of a file share it with chosen users without changing normal UNIX file permissions.
+The owner makes a list of allowed user names in a file called "<file>.acl". Anyone the list names can run
+the owner's copy of scopy to copy the file. The program is meant to run with its SetUID bit set, so it
+runs with the owner's rights.
 
-How the other users then the main user will do to copy ther file to them 
-"For example, assume Alice wants to make her schedule available to Bob. She places a copy of scopy
-in her public directory at /home/alice/public/scopy, verifies that Bob will be able to access it, and sets
-its SetUID bit with chmod u+s scopy. She also creates appropriate permission data so Bob can access her
-daily schedule.txt. When Bob wants to make a copy, he runs a command like the following:
-bob@wopr $ /home/alice/public/scopy /home/alice/daily_schedule.txt alices_schedule.txt"
+The .acl file has one line per allowed user: a user name, a space, and one letter (for example "bob r").
 
-This program has a Makefile if you need to run it you just call ***"make"**** to compile the scopy
-and ******"make clean"****** if you need to move the object files.
+EXAMPLE
+Alice wants to share her schedule with Bob. She:
+  1. puts a copy of scopy in her public directory, /home/alice/public/scopy,
+  2. makes sure Bob can run it, and sets its SetUID bit:  chmod u+s scopy
+  3. creates /home/alice/daily_schedule.txt.acl containing the line:  bob r
 
-This progam it include a file.txt.acl , file.txt , Makefile, and the main cod3e in scopy.c //////
+Bob then copies the file with:
+  bob@wopr $ /home/alice/public/scopy /home/alice/daily_schedule.txt alices_schedule.txt
+
+BUILD
+  make          compiles scopy
+  make clean    removes scopy and the object files
+(scopy uses sendfile() from <sys/sendfile.h>, so it builds on Linux.)
+
+FILES
+  scopy.c       the program (main)
+  functions.h   helper functions: privilege switching, symlink and ownership checks
+  Makefile      build rules
+  file.txt, file.txt.acl   a sample file and its access list
+
+CHECKS THE PROGRAM MAKES
+  - two arguments are given (source and destination)
+  - the source file and its .acl file are regular files with a single hard link (no symlinks)
+  - the .acl file exists and is owned by the same user as scopy; the source belongs to scopy's owner
+  - the user running scopy (looked up from the real user id) appears in the .acl file
+  - errors opening, reading, or writing a file are reported instead of ignored
+
+KNOWN LIMITS (not changed)
+  - The program drops its extra privileges at the start and never restores them (do_setuid() is never
+    called), so it can only read files the calling user could already read.
+  - The letter after each name in the .acl file is read but not used: every listed user is allowed.
+  - The checks and the later open() are separate steps, so a file could be swapped in between them.
+  - At most 200 lines of the .acl file are read.
